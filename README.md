@@ -52,7 +52,7 @@ pip install langchain langchain-core langchain-community \
 Place documents in the configured `papers` directory, then:
 
 ```bash
-python research_assistant_v6.py
+python oassistant.py
 ```
 
 ---
@@ -87,6 +87,8 @@ CLI overrides `config.json`, which overrides defaults.
 * `.docx` (section detection via headings)
 * `.odt`
 * `.html`
+* '.md'
+* '.json' (conversations)
 
 Each chunk stores:
 
