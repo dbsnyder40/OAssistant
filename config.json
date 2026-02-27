@@ -1,0 +1,35 @@
+{
+  "paths": {
+    "papers_dir": "/home/snyder/ollama/religion/BofConcord",
+    "vectorstore_dir": "religion/BofC_faiss_index",
+    "conversation_dir": "conversations",
+    "retrieval_log_dir": "retrieval_logs"
+  },
+
+  "models": {
+    "embedding_model": "nomic-embed-text",
+    "chat_model": "qwen3:4b-q4_K_M",
+    "temperature": 0.2
+  },
+
+  "retrieval": {
+    "vector_k": 4,
+    "bm25_k": 4
+  },
+
+  "chunking": {
+    "chunk_size": 800,
+    "chunk_overlap": 150
+  },
+
+  "logging": {
+    "log_conversations": true,
+    "log_retrieval_metadata": true
+  },
+  "session": {
+    "default_session_id": "default",
+    "auto_load_previous_memory": false
+  },
+  "corpus":"research"
+
+}
