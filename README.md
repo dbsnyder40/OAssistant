@@ -60,7 +60,7 @@ python oassistant.py
 ### Command Line Options
 
 ```bash
-python research_assistant_v6.py [-h] [-c CONFIG] [-m MODEL] [-d DOCUMENTS]
+python oassistant.py [-h] [-c CONFIG] [-m MODEL] [-d DOCUMENTS]
 ```
 
 | Flag | Description               |
@@ -73,7 +73,7 @@ python research_assistant_v6.py [-h] [-c CONFIG] [-m MODEL] [-d DOCUMENTS]
 Example:
 
 ```bash
-python research_assistant_v6.py -m llama3.1 -d ./religion
+python oassistant.py -m llama3.1 -d ./religion
 ```
 
 CLI overrides `config.json`, which overrides defaults.
