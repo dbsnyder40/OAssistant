@@ -1,0 +1,16 @@
+
+Background of OAssistant.py
+
+This project was initiated to enable me to question my old papers using Ollama on my desktop computer. With Ollama already running, it seemed feasible.  However, it turned complicated quickly.  I have written simple computer programs throughout my professional career,  but am weak on object oriented practices.
+
+Two advantages to running AI locally are avoiding offsite data transfers (documents and queries) and avoiding subscription costs.  The disadvantage is I am running on a less capable system, a Ryzen 7 cpu, 32GB Memory, no GPU, Linux Fedora 43.  But to save money, and for privacy, I persisted.
+
+First, I requested ChatGPT to write a python research assistant, but could not get it to run, due to incompatible imports.  Passing the error messages back to it, resulted in endless circles.  The generated code assumed LangChain 0.2, and I was running LangChain 1.2.
+
+Books on Ollama agentics, had similar problems.  Then I discovered langchain-tutorials.com which helped me tackle issues step by step.   However, the tutorials appear to be written for langchain 1.0, so there were still some version compatibility issues.  In addition they are written to use Google’s Gemini AI, instead of my local Ollama platform.  But working step-by-step through the tutorial, using ChatGPT to assist rewriteing the code, with a lot of persistence, error checking, and intense discussions with ChatGPT, most of the examples (but not all) ran on my desktop.
+
+In some cases the langchain_tutorial approach proved incompatible with my system and required a completely different approach.  For example, the tutorial uses chromaDB to create a vectorized index, I could not get this to work on my system.  However, but FAISS functioned correctly.  Working through the tutorial provided me with insights on several concepts involved with developing RAG and agentics, allowing me make better choices. 
+
+The resulting RAG example is a program that is hitting well above my programming weight and capabilities.  It took a couple months of effort, but I could not have done it without the AI assistance of ChatGPT.  It was especially helpful in diagnosing error messages and suggesting modifications.  Any best practices implemented into the code are due to ChatGPT;  any disregard of best practices is my own fault.
+
+If you decide to try to run or work with this code, consult the requirements.txt file.  Be aware that compatibility issues may arise due to the rapid evolution of AI and LangChain. What worked in the past does not work today, and what functions today may not work tomorrow.
