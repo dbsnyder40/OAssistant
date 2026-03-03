@@ -1,0 +1,45 @@
+changelog
+
+0.1.0
+		refactoring code
+
+OAssistant/
+│
+├── OAssistant.py          # CLI entrypoint (very thin)
+├── config.json
+├── requirements.txt
+├── README.md
+│
+└── oassistant/
+    ├── __init__.py
+    │
+    ├── config.py          # load_config, deep_merge, defaults
+    │
+    ├── indexing/
+    │   ├── __init__.py
+    │   ├── loaders.py     # txt, pdf, docx, md, html, json
+    │   ├── chunking.py    # chunk_documents
+    │   ├── vectorstore.py # build_vectorstore, load_vectorstore
+    │   ├── manifest.py    # build_file_manifest, needs_rebuild
+    │
+    ├── chat/
+    │   ├── __init__.py
+    │   ├── rag_chain.py   # create_rag_chain
+    │   ├── session.py     # interactive_session
+    │   ├── logging.py     # save_conversation, log_retrieval
+    │
+    ├── models.py          # embeddings + llm factories
+    │
+    └── version.py         # VERSION constant
+    
+		
+# v4 add Hybrid search
+# v5 add session Memory
+# v6 add conversation logger
+# v7 add configuration file
+# v8 add command line arguments
+# v9 add json, md(markdown) document loaders, corpus configuration
+
+This code is developed to run locally for:
+Hardware:  Ryzen 7, 32 GB memory (I think 16GB woud be OK), no GPU. A GPU would improve response, but I don't have one (yet).
+Software:  Ollama, Linux, Fedora 43.  I don't think Fedora (or Linux) is needed - but that is what I have.
