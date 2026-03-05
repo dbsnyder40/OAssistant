@@ -1,34 +1,40 @@
-# Research Assistant (Local Hybrid RAG)
+# OAssistant.py - Research Assistant (Local Hybrid RAG)
 
-A fully local Retrieval-Augmented Generation (RAG) research assistant built with:
+A **fully local Retrieval-Augmented Generation (RAG) research assistant** built with:
 
-* LangChain
+* LangChain 1.x
 * Ollama
 * FAISS
 * Hybrid retrieval (Vector + BM25)
 
-Designed for document-based research with transparent citations and zero external APIs.
+The system is designed for **document-driven research with transparent citations, structured metadata, and zero external APIs**.
 
 ---
 
-## Features
+# Features
 
-* Hybrid retrieval (semantic + lexical)
-* Automatic FAISS rebuild when corpus changes
-* Metadata-aware citations (title, section, page)
-* Session-based conversational memory
-* Config-driven architecture
-* Optional conversation & retrieval logging
-* Command-line overrides
+* **Hybrid retrieval**
+
+  * Semantic search (FAISS embeddings)
+  * Lexical search (BM25)
+* **Structured document ingestion**
+* **Metadata-rich document chunks**
+* **Automatic FAISS rebuild when corpus changes**
+* **Section-aware document parsing**
+* **Session-based conversational memory**
+* **Config-driven architecture**
+* **Optional conversation & retrieval logging**
+* **Command-line overrides**
 
 ---
 
-## Requirements
+# Requirements
 
-* Python 3.10+
-* Ollama installed locally → [https://ollama.com](https://ollama.com)
+* Python **3.10+**
+* **Ollama** installed locally
+  [https://ollama.com](https://ollama.com)
 
-Pull required models:
+Pull the required models:
 
 ```bash
 ollama pull qwen3:4b-q4_K_M
@@ -40,33 +46,50 @@ Install dependencies:
 ```bash
 pip install langchain langchain-core langchain-community \
             langchain-ollama faiss-cpu \
-            unstructured python-docx beautifulsoup4 lxml
+            python-docx beautifulsoup4 lxml \
+            markdown-it-py
 ```
+
+Optional but recommended:
+
+```bash
+sudo apt install pandoc
+```
+
+Pandoc is used to convert **ODT → DOCX** during ingestion.
 
 ---
 
-## Usage
+# Usage
 
-Place documents in the configured `papers` directory, then:
+Place documents in the configured `papers` directory and run:
 
 ```bash
-python research_assistant_v6.py
+python oassistant.py
 ```
+
+The system will:
+
+1. Load documents
+2. Chunk them
+3. Create embeddings
+4. Build or update the FAISS index
+5. Start an interactive research chat
 
 ---
 
-### Command Line Options
+# Command Line Options
 
-```bash
+```
 python research_assistant_v6.py [-h] [-c CONFIG] [-m MODEL] [-d DOCUMENTS]
 ```
 
-| Flag | Description               |
-| ---- | ------------------------- |
-| `-h` | Show help                 |
-| `-c` | Path to config file       |
-| `-m` | Override LLM model        |
-| `-d` | Override papers directory |
+| Flag | Description                 |
+| ---- | --------------------------- |
+| `-h` | Show help                   |
+| `-c` | Path to configuration file  |
+| `-m` | Override LLM model          |
+| `-d` | Override document directory |
 
 Example:
 
@@ -74,73 +97,129 @@ Example:
 python research_assistant_v6.py -m llama3.1 -d ./religion
 ```
 
-CLI overrides `config.json`, which overrides defaults.
+CLI arguments override `config.json`, which overrides defaults.
 
 ---
 
-## Supported File Types
+# Supported File Types
 
-* `.txt` (first line = title)
-* `.pdf` (page numbers preserved)
-* `.docx` (section detection via headings)
-* `.odt`
-* `.html`
+The ingestion pipeline uses **format-specific loaders** designed for consistent metadata.
 
-Each chunk stores:
-
-* title
-* source filename
-* section
-* page
-* file type
+| Format  | Strategy                        |
+| ------- | ------------------------------- |
+| `.txt`  | First line used as title        |
+| `.pdf`  | Page-based loading              |
+| `.docx` | Section detection via headings  |
+| `.odt`  | Converted to DOCX via Pandoc    |
+| `.md`   | Parsed via Markdown AST         |
+| `.html` | Section extraction via headings |
+| `.json` | Chat conversation memory        |
 
 ---
 
-## How It Works
+# Document Metadata
 
-1. Documents are loaded and chunked.
-2. Embeddings are created with Ollama.
-3. FAISS stores vectors locally.
-4. Hybrid retrieval merges:
+Every chunk stores structured metadata used during retrieval:
 
-   * FAISS semantic results
-   * BM25 lexical results
-5. The LLM answers using only retrieved context.
-6. Citations are included in every response.
+| Field       | Meaning                                   |
+| ----------- | ----------------------------------------- |
+| `source`    | Original filename                         |
+| `file_type` | txt / pdf / docx / odt / md / html / json |
+| `title`     | Extracted or inferred document title      |
+| `section`   | Section heading if available              |
+| `page`      | Page number (PDF only)                    |
+| `corpus`    | Document collection identifier            |
 
-A file manifest detects corpus changes and triggers automatic index rebuild.
+Optional metadata may include:
+
+* `contains_code`
+* `code_language`
+* `session_id`
+
+This metadata improves **citation accuracy and retrieval filtering**.
 
 ---
 
-## Configuration
+# Document Ingestion Pipeline
 
-If `config.json` exists, it overrides defaults.
+Documents are processed using a **deterministic loader architecture** rather than generic “magic” loaders.
+
+Key design decisions:
+
+* Avoid `Unstructured` loaders where possible
+* Use **format-specific parsers**
+* Preserve **section hierarchy**
+* Attach **consistent metadata**
+
+### ODT Handling
+
+ODT files are converted using:
+
+```
+ODT → DOCX → parsed via python-docx
+```
+
+This avoids unreliable `UnstructuredODTLoader` behavior.
+
+---
+
+# How Retrieval Works
+
+1. Documents are loaded and converted to `Document` objects.
+
+2. Documents are chunked.
+
+3. Embeddings are generated with Ollama.
+
+4. FAISS stores vectors locally.
+
+5. Hybrid retrieval merges:
+
+   * Semantic similarity (FAISS)
+   * Lexical matches (BM25)
+
+6. Retrieved context is passed to the LLM.
+
+7. The response includes **transparent citations**.
+
+---
+
+# Index Rebuild Logic
+
+A **file manifest** tracks:
+
+* filenames
+* modification timestamps
+
+If the corpus changes, the system automatically:
+
+```
+rebuilds the FAISS index
+```
+
+This prevents stale embeddings.
+
+---
+
+# Configuration
+
+If `config.json` exists, it overrides default settings.
 
 You can configure:
 
-* Models
+* LLM model
+* Embedding model
 * Retrieval parameters
-* Chunking size
+* Chunk size
 * Logging
-* Paths
+* Document paths
 
 ---
 
-## Project Goals
+# Project Goals
 
-* Fully local
+* Fully local research assistant
+* High-quality document retrieval
 * Transparent citations
-* Research-focused
+* Structured document ingestion
 * Extensible architecture
-
----
-
-## Roadmap
-
-* Weighted hybrid scoring
-* Reranking
-* Streaming output
-* Evaluation mode
-* Class-based architecture
-
-
